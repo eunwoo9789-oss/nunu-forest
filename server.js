@@ -5,18 +5,17 @@ const { v4: uuidv4 } = require('uuid');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
+const ADMIN_TOKEN = 'nunu8989_forest_admin';
 
 app.use(express.json());
 app.use(express.static('public'));
 
 /* ══════════════════════════════════════
-   STORAGE  (MongoDB 환경변수 있으면 Atlas,
-             없으면 로컬 data.json)
+   STORAGE
 ══════════════════════════════════════ */
 let storage;
 
 if (process.env.MONGO_URI) {
-  /* ── Cloud: MongoDB Atlas ── */
   const { MongoClient } = require('mongodb');
   const client = new MongoClient(process.env.MONGO_URI);
   let col;
@@ -39,7 +38,6 @@ if (process.env.MONGO_URI) {
   console.log('☁️  MongoDB 모드로 시작합니다.');
 
 } else {
-  /* ── Local: JSON 파일 ── */
   const DATA_FILE = path.join(__dirname, 'data.json');
 
   const read = () => {
@@ -82,17 +80,21 @@ app.post('/api/reservations', async (req, res) => {
   if (!name || !date || !option || !token)
     return res.status(400).json({ error: '필수 정보가 없습니다.' });
 
+  const isAdmin = token === ADMIN_TOKEN;
   const list = await storage.getAll();
 
-  if (list.find(r => r.token === token))
-    return res.status(400).json({ error: '이미 예약하셨습니다. 내 예약에서 수정 또는 취소 후 재신청해주세요.' });
+  if (!isAdmin) {
+    if (list.find(r => r.token === token))
+      return res.status(400).json({ error: '이미 약속하셨습니다. 내 약속에서 수정 또는 취소 후 재신청해주세요.' });
 
-  if (list.find(r =>
-    r.name.trim().toLowerCase() === name.trim().toLowerCase() && r.token !== token
-  ))
-    return res.status(400).json({ error: `'${name}' 닉네임으로 이미 예약이 존재합니다. 다른 닉네임을 사용해주세요.` });
+    if (list.find(r =>
+      r.name.trim().toLowerCase() === name.trim().toLowerCase() && r.token !== token
+    ))
+      return res.status(400).json({ error: `'${name}' 닉네임으로 이미 약속이 존재합니다. 다른 닉네임을 사용해주세요.` });
+  }
 
-  const reservation = { id: uuidv4(), name, date, option, token, createdAt: new Date().toISOString() };
+  const entryToken = isAdmin ? uuidv4() : token;
+  const reservation = { id: uuidv4(), name, date, option, token: entryToken, createdAt: new Date().toISOString() };
   res.json(await storage.add(reservation));
 });
 
@@ -101,8 +103,9 @@ app.put('/api/reservations/:id', async (req, res) => {
   const { date, option, token } = req.body;
 
   const existing = await storage.findOne({ id });
-  if (!existing) return res.status(404).json({ error: '예약을 찾을 수 없습니다.' });
-  if (existing.token !== token) return res.status(403).json({ error: '권한이 없습니다.' });
+  if (!existing) return res.status(404).json({ error: '약속을 찾을 수 없습니다.' });
+  if (existing.token !== token && token !== ADMIN_TOKEN)
+    return res.status(403).json({ error: '권한이 없습니다.' });
 
   res.json(await storage.update(id, { date, option }));
 });
@@ -112,8 +115,9 @@ app.delete('/api/reservations/:id', async (req, res) => {
   const { token } = req.body;
 
   const existing = await storage.findOne({ id });
-  if (!existing) return res.status(404).json({ error: '예약을 찾을 수 없습니다.' });
-  if (existing.token !== token) return res.status(403).json({ error: '권한이 없습니다.' });
+  if (!existing) return res.status(404).json({ error: '약속을 찾을 수 없습니다.' });
+  if (existing.token !== token && token !== ADMIN_TOKEN)
+    return res.status(403).json({ error: '권한이 없습니다.' });
 
   await storage.remove(id);
   res.json({ success: true });

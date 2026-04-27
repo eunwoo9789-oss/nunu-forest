@@ -15,6 +15,24 @@
       <div class="cloud cloud-1"></div>
       <div class="cloud cloud-2"></div>
       <div class="cloud cloud-3"></div>
+
+      <!-- 하늘 새들 -->
+      <span class="sky-bird" style="--spd:18s;--top:12%;--dly:0s">🐦</span>
+      <span class="sky-bird" style="--spd:24s;--top:8%;--dly:6s">🐦</span>
+
+      <!-- 마을 건물들 -->
+      <div class="village-row">
+        <div class="v-house" style="--left:3%;--sz:2.2em">🏠</div>
+        <div class="v-house" style="--left:14%;--sz:2.8em">🏡</div>
+        <div class="v-shop" style="--left:28%;--sz:2.5em">🏪</div>
+        <div class="v-house" style="--left:44%;--sz:2.4em">🏠</div>
+        <div class="v-tent" style="--left:58%;--sz:2.6em">⛺</div>
+        <div class="v-house" style="--left:70%;--sz:2.2em">🏡</div>
+        <div class="v-house" style="--left:83%;--sz:2.7em">🏠</div>
+        <div class="v-shop" style="--left:92%;--sz:2.3em">🏪</div>
+      </div>
+
+      <!-- 나무 줄 -->
       <div class="tree-row">
         <span class="tree" style="--delay:0s;   --size:2.8em">🌳</span>
         <span class="tree" style="--delay:1.2s; --size:3.5em">🌲</span>
@@ -23,6 +41,22 @@
         <span class="tree" style="--delay:0.7s; --size:2.9em">🌳</span>
         <span class="tree" style="--delay:2.1s; --size:3.4em">🌲</span>
       </div>
+
+      <!-- 꽃들 -->
+      <div class="flower-strip">
+        <span style="--fl:4%">🌸</span><span style="--fl:12%">🌺</span>
+        <span style="--fl:22%">🌻</span><span style="--fl:35%">🌼</span>
+        <span style="--fl:48%">🌸</span><span style="--fl:60%">🌺</span>
+        <span style="--fl:72%">🌻</span><span style="--fl:84%">🌼</span>
+        <span style="--fl:93%">🌸</span>
+      </div>
+
+      <!-- 돌아다니는 동물들 -->
+      <span class="v-walk" style="--spd:20s;--dly:0s;--bot:78px">🐸</span>
+      <span class="v-walk" style="--spd:26s;--dly:5s;--bot:82px">🦊</span>
+      <span class="v-walk" style="--spd:17s;--dly:11s;--bot:76px">🐰</span>
+      <span class="v-walk" style="--spd:29s;--dly:3s;--bot:80px">🐱</span>
+      <span class="v-walk" style="--spd:22s;--dly:8s;--bot:79px">🐶</span>
     </div>
 
     <div class="welcome-card">
@@ -50,13 +84,70 @@
       <div class="header-logo">🍃 누누의 숲</div>
       <div class="header-right">
         <button id="music-toggle" class="btn-icon" title="음악 켜기/끄기">🎵</button>
-        <button id="my-reservation-btn" class="btn btn-outline">내 예약 📋</button>
+        <button id="my-reservation-btn" class="btn btn-outline">내 약속 📋</button>
       </div>
     </header>
 
     <div id="edit-banner" class="edit-banner hidden">
       ✏️ 수정할 날짜를 선택하세요
       <button class="edit-banner-cancel" onclick="cancelEditMode()">✕ 취소</button>
+    </div>
+
+    <!-- 카페 거리 씬 -->
+    <div class="cafe-scene-strip" id="cafe-scene">
+      <div class="cs-sky">
+        <span class="cs-sun" id="cs-sun">☀️</span>
+        <span class="cs-moon" id="cs-moon">🌙</span>
+        <span class="cs-cloud" style="--cl:12%">☁️</span>
+        <span class="cs-cloud" style="--cl:55%">☁️</span>
+        <span class="cs-star" style="--cl:25%">✨</span>
+        <span class="cs-star" style="--cl:70%">⭐</span>
+        <span class="cs-star" style="--cl:42%">✨</span>
+      </div>
+      <div class="cs-street">
+        <!-- 왼쪽 카페 -->
+        <div class="cs-building" style="left:1%">
+          <span class="cs-bld-icon">☕</span>
+          <span class="cs-bld-name">달팽이 카페</span>
+        </div>
+        <!-- 테이블 그룹 1 -->
+        <div class="cs-table-zone" style="left:16%">
+          <div class="cs-table-spot">
+            <div class="cs-t-chars">🐱🦊</div>
+            <div class="cs-t-food">☕🍰</div>
+          </div>
+          <div class="cs-table-spot">
+            <div class="cs-t-chars">🐰</div>
+            <div class="cs-t-food">🧁</div>
+          </div>
+        </div>
+        <!-- 중앙 식당 -->
+        <div class="cs-building" style="left:42%">
+          <span class="cs-bld-icon">🍽️</span>
+          <span class="cs-bld-name">너굴 식당</span>
+        </div>
+        <!-- 테이블 그룹 2 -->
+        <div class="cs-table-zone" style="left:57%">
+          <div class="cs-table-spot">
+            <div class="cs-t-chars">🐻🐮</div>
+            <div class="cs-t-food">🎂🍱</div>
+          </div>
+          <div class="cs-table-spot">
+            <div class="cs-t-chars">🐶</div>
+            <div class="cs-t-food">🍜</div>
+          </div>
+        </div>
+        <!-- 오른쪽 빵집 -->
+        <div class="cs-building" style="left:80%">
+          <span class="cs-bld-icon">🍞</span>
+          <span class="cs-bld-name">성심당</span>
+        </div>
+        <!-- 돌아다니는 동물 -->
+        <span class="cs-walk-anim" style="--spd:18s;--dly:2s">🐸</span>
+        <span class="cs-walk-anim" style="--spd:25s;--dly:9s">🐹</span>
+        <span class="cs-walk-anim" style="--spd:21s;--dly:14s">🦝</span>
+      </div>
+      <div class="cs-ground"></div>
     </div>
 
     <div id="user-greeting" class="user-greeting"></div>
@@ -82,7 +173,7 @@
         <span class="legend-item"><span class="ldot lunch"></span>점심</span>
         <span class="legend-item"><span class="ldot dinner"></span>저녁</span>
         <span class="legend-item"><span class="ldot bread"></span>성심당</span>
-        <span class="legend-item"><span class="ldot mine"></span>내 예약</span>
+        <span class="legend-item"><span class="ldot mine"></span>내 약속</span>
       </div>
     </div>
   </div>
@@ -121,7 +212,6 @@
       <p class="modal-sub">어떤 만남을 원하시나요?</p>
 
       <div class="option-list">
-
         <div class="option-item" data-option="lunch">
           <div class="opt-scene">☀️</div>
           <div class="opt-body">
@@ -160,7 +250,6 @@
           </div>
           <span class="opt-check">✓</span>
         </div>
-
       </div>
 
       <div class="modal-actions">
@@ -170,7 +259,7 @@
     </div>
   </div>
 
-  <!-- ===== CONFIRM MODAL (일반) ===== -->
+  <!-- ===== CONFIRM MODAL ===== -->
   <div id="confirm-modal" class="modal hidden">
     <div class="modal-bg"></div>
     <div class="modal-card text-center">
@@ -198,11 +287,11 @@
     </div>
   </div>
 
-  <!-- ===== MY RESERVATION MODAL ===== -->
+  <!-- ===== MY 약속 MODAL ===== -->
   <div id="my-modal" class="modal hidden">
     <div class="modal-bg"></div>
     <div class="modal-card">
-      <h3 class="modal-section-title">📋 내 예약 현황</h3>
+      <h3 class="modal-section-title" id="my-modal-title">📋 내 약속 현황</h3>
       <div id="my-list" class="my-list"></div>
       <div class="modal-actions" style="margin-top:16px">
         <button id="close-my-modal" class="btn btn-ghost" style="width:100%">닫기</button>
@@ -215,11 +304,33 @@
     <div class="modal-bg"></div>
     <div class="modal-card text-center">
       <div class="confirm-emoji">🍂</div>
-      <h3 class="confirm-title">예약을 취소할까요?</h3>
+      <h3 class="confirm-title">약속을 취소할까요?</h3>
       <p class="confirm-question" id="cancel-detail" style="font-size:0.9em;color:#795548;margin-bottom:8px"></p>
       <div class="modal-actions">
         <button id="cancel-ok-btn" class="btn btn-danger">네, 취소할게요 🍂</button>
         <button id="cancel-back-btn" class="btn btn-ghost">아니요, 유지할래요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ADD MODAL ===== -->
+  <div id="admin-add-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card">
+      <div class="confirm-emoji">👑</div>
+      <h3 class="modal-date" id="admin-add-date-title"></h3>
+      <p class="modal-sub">참석자를 추가합니다 (관리자)</p>
+      <div style="margin-bottom:14px">
+        <input type="text" id="admin-add-name-input" placeholder="닉네임 입력" maxlength="12" autocomplete="off">
+      </div>
+      <div class="admin-opt-row">
+        <button class="admin-opt-btn" data-opt="lunch">🍱 점심</button>
+        <button class="admin-opt-btn" data-opt="dinner">🍽️ 저녁</button>
+        <button class="admin-opt-btn" data-opt="bread">🍞 성심당</button>
+      </div>
+      <div class="modal-actions" style="margin-top:16px">
+        <button id="admin-add-ok-btn" class="btn btn-primary">추가하기 ✨</button>
+        <button id="admin-add-cancel-btn" class="btn btn-ghost">취소</button>
       </div>
     </div>
   </div>
