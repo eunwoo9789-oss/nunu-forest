@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍃 해쳐 모여봐요. 누누의 숲</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== WELCOME SCREEN ===== -->
+  <div id="welcome-screen" class="screen active">
+    <div class="welcome-bg">
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+      <div class="tree-row">
+        <span class="tree" style="--delay:0s;   --size:2.8em">🌳</span>
+        <span class="tree" style="--delay:1.2s; --size:3.5em">🌲</span>
+        <span class="tree" style="--delay:0.4s; --size:2.5em">🌳</span>
+        <span class="tree" style="--delay:1.8s; --size:3.2em">🌲</span>
+        <span class="tree" style="--delay:0.7s; --size:2.9em">🌳</span>
+        <span class="tree" style="--delay:2.1s; --size:3.4em">🌲</span>
+      </div>
+    </div>
+
+    <div class="welcome-card">
+      <div class="welcome-leaf">🍃</div>
+      <h1 class="welcome-title">해쳐 모여봐요.<br>누누의 숲</h1>
+      <p class="welcome-text">
+        반가워요!<br>
+        고마운 마음을 담아 보답하는 자리를<br>
+        만들고자 이 링크를 보냅니다. 🌿<br><br>
+        참석하는 당신의 이름/닉네임을<br>
+        적어주세요!
+      </p>
+      <div class="input-group">
+        <input type="text" id="name-input" placeholder="이름 또는 닉네임" maxlength="12" autocomplete="off">
+        <button id="name-submit" class="btn btn-primary">입장하기 🌿</button>
+      </div>
+    </div>
+
+    <div class="grass-floor"></div>
+  </div>
+
+  <!-- ===== CALENDAR SCREEN ===== -->
+  <div id="calendar-screen" class="screen">
+    <header class="app-header">
+      <div class="header-logo">🍃 누누의 숲</div>
+      <div class="header-right">
+        <button id="music-toggle" class="btn-icon" title="음악 켜기/끄기">🎵</button>
+        <button id="my-reservation-btn" class="btn btn-outline">내 예약 📋</button>
+      </div>
+    </header>
+
+    <div id="edit-banner" class="edit-banner hidden">
+      ✏️ 수정할 날짜를 선택하세요
+      <button class="edit-banner-cancel" onclick="cancelEditMode()">✕ 취소</button>
+    </div>
+
+    <div id="user-greeting" class="user-greeting"></div>
+
+    <div class="calendar-wrapper">
+      <div class="month-nav">
+        <button id="prev-month" class="btn-nav">◀</button>
+        <h2 id="month-title" class="month-title"></h2>
+        <button id="next-month" class="btn-nav">▶</button>
+      </div>
+
+      <div class="calendar-grid" id="calendar-grid">
+        <div class="day-header sun">일</div>
+        <div class="day-header">월</div>
+        <div class="day-header">화</div>
+        <div class="day-header">수</div>
+        <div class="day-header">목</div>
+        <div class="day-header">금</div>
+        <div class="day-header sat">토</div>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="ldot lunch"></span>점심</span>
+        <span class="legend-item"><span class="ldot dinner"></span>저녁</span>
+        <span class="legend-item"><span class="ldot bread"></span>성심당</span>
+        <span class="legend-item"><span class="ldot mine"></span>내 예약</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DATE DETAIL MODAL ===== -->
+  <div id="detail-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card">
+      <h3 id="detail-date-title" class="modal-date"></h3>
+      <p class="modal-sub">이 날의 참석 현황이에요 🌿</p>
+
+      <div class="detail-sections">
+        <div class="detail-sec">
+          <div class="detail-sec-head lunch-head">🍱 점심 <span class="detail-time">12:00~13:00</span></div>
+          <div id="detail-lunch" class="detail-names"></div>
+        </div>
+        <div class="detail-sec">
+          <div class="detail-sec-head dinner-head">🍽️ 저녁 <span class="detail-time">18:00~19:00</span></div>
+          <div id="detail-dinner" class="detail-names"></div>
+        </div>
+        <div class="detail-sec">
+          <div class="detail-sec-head bread-head">🍞 성심당 기다리는 중</div>
+          <div id="detail-bread" class="detail-names"></div>
+        </div>
+      </div>
+
+      <div id="detail-actions" class="modal-actions" style="margin-top:18px"></div>
+    </div>
+  </div>
+
+  <!-- ===== OPTION MODAL ===== -->
+  <div id="option-modal" class="modal hidden">
+    <div class="modal-bg" id="option-modal-bg"></div>
+    <div class="modal-card">
+      <h3 id="option-date-title" class="modal-date"></h3>
+      <p class="modal-sub">어떤 만남을 원하시나요?</p>
+
+      <div class="option-list">
+
+        <div class="option-item" data-option="lunch">
+          <div class="opt-scene">☀️</div>
+          <div class="opt-body">
+            <div class="opt-icon-wrap lunch-icon">🍱</div>
+            <div class="opt-info">
+              <strong>점심</strong>
+              <span>12:00 ~ 13:00</span>
+              <em>따스한 낮 한끼! 🌻</em>
+            </div>
+          </div>
+          <span class="opt-check">✓</span>
+        </div>
+
+        <div class="option-item" data-option="dinner">
+          <div class="opt-scene">🌙</div>
+          <div class="opt-body">
+            <div class="opt-icon-wrap dinner-icon">🌃</div>
+            <div class="opt-info">
+              <strong>저녁</strong>
+              <span>18:00 ~ 19:00</span>
+              <em>별빛 아래 저녁 한끼! ✨</em>
+            </div>
+          </div>
+          <span class="opt-check">✓</span>
+        </div>
+
+        <div class="option-item" data-option="bread">
+          <div class="opt-scene">🌾</div>
+          <div class="opt-body">
+            <div class="opt-icon-wrap bread-icon">🍞</div>
+            <div class="opt-info">
+              <strong>성심당찬스기다릴래요</strong>
+              <span>대전 성심당 빵 선물!</span>
+              <em>달콤한 소식 기다려요~ 🎁</em>
+            </div>
+          </div>
+          <span class="opt-check">✓</span>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button id="option-cancel-btn" class="btn btn-ghost">닫기</button>
+        <button id="option-next-btn" class="btn btn-primary" disabled>다음으로 🌿</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONFIRM MODAL (일반) ===== -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card text-center">
+      <div class="confirm-emoji" id="confirm-emoji">🌿</div>
+      <h3 class="confirm-title" id="confirm-title"></h3>
+      <p class="confirm-question" id="confirm-question">에 해쳐모이시겠습니까?</p>
+      <div class="modal-actions">
+        <button id="confirm-ok-btn" class="btn btn-primary">네, 그날봐요! 🎉</button>
+        <button id="confirm-back-btn" class="btn btn-ghost">잠시만, 다시볼래요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EDIT CONFIRM MODAL ===== -->
+  <div id="edit-confirm-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card text-center">
+      <div class="confirm-emoji">✏️</div>
+      <h3 class="confirm-title" id="edit-confirm-title"></h3>
+      <p class="confirm-question">로 변경하시겠습니까?</p>
+      <div class="modal-actions">
+        <button id="edit-ok-btn" class="btn btn-primary">네, 바꿀래요! ✨</button>
+        <button id="edit-back-btn" class="btn btn-ghost">잠시만, 다시볼래요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MY RESERVATION MODAL ===== -->
+  <div id="my-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card">
+      <h3 class="modal-section-title">📋 내 예약 현황</h3>
+      <div id="my-list" class="my-list"></div>
+      <div class="modal-actions" style="margin-top:16px">
+        <button id="close-my-modal" class="btn btn-ghost" style="width:100%">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CANCEL CONFIRM MODAL ===== -->
+  <div id="cancel-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card text-center">
+      <div class="confirm-emoji">🍂</div>
+      <h3 class="confirm-title">예약을 취소할까요?</h3>
+      <p class="confirm-question" id="cancel-detail" style="font-size:0.9em;color:#795548;margin-bottom:8px"></p>
+      <div class="modal-actions">
+        <button id="cancel-ok-btn" class="btn btn-danger">네, 취소할게요 🍂</button>
+        <button id="cancel-back-btn" class="btn btn-ghost">아니요, 유지할래요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
