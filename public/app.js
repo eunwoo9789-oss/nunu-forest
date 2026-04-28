@@ -108,7 +108,7 @@ function enterCalendar() {
     document.getElementById('my-reservation-btn').textContent = '👑 전체현황';
   } else {
     document.getElementById('user-greeting').textContent =
-      `🌿 안녕하세요, ${S.userName}님! 날짜를 눌러 참석 현황을 확인하세요.`;
+      `🌿 ${S.userName}님, 날짜를 눌러 참석 현황을 확인해요!`;
     document.getElementById('my-reservation-btn').textContent = '내 약속 📋';
   }
 
@@ -292,20 +292,24 @@ function renderCal() {
     const chipsEl = document.createElement('div');
     chipsEl.className = 'chips';
     const dayRes = S.reservations.filter(r => r.date === dateStr);
-    dayRes.slice(0, 5).forEach(r => {
+
+    // 옵션별로 묶어서 이모지+인원수만 표시 (옵션B)
+    const byOpt = {};
+    dayRes.forEach(r => {
+      if (!byOpt[r.option]) byOpt[r.option] = { count: 0, hasMe: false };
+      byOpt[r.option].count++;
+      if (r.token === S.token) byOpt[r.option].hasMe = true;
+    });
+    ['lunch', 'dinner', 'bread'].forEach(opt => {
+      const d = byOpt[opt];
+      if (!d) return;
       const chip = document.createElement('div');
-      chip.className = `chip ${r.option}`;
-      if (r.token === S.token) chip.classList.add('mine');
-      chip.textContent = `${OPT[r.option].emoji} ${r.name}`;
-      chip.title = `${r.name}: ${OPT[r.option].label}`;
+      chip.className = `chip ${opt}`;
+      if (d.hasMe) chip.classList.add('mine');
+      chip.textContent = d.count > 1 ? `${OPT[opt].emoji}${d.count}` : OPT[opt].emoji;
+      chip.title = `${OPT[opt].short} ${d.count}명 참석`;
       chipsEl.appendChild(chip);
     });
-    if (dayRes.length > 5) {
-      const more = document.createElement('div');
-      more.className = 'chip bread';
-      more.textContent = `+${dayRes.length - 5}명 더`;
-      chipsEl.appendChild(more);
-    }
     cell.appendChild(chipsEl);
 
     if (!isPast || isToday) {

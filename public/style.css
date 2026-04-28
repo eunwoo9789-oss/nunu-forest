@@ -30,14 +30,21 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: 'Noto Sans KR', sans-serif;
   background: linear-gradient(180deg, var(--sky) 0%, var(--sky2) 50%, #e8f5e9 100%);
   min-height: 100vh;
   overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
 }
 
-.screen { display: none; min-height: 100vh; }
+.screen { display: none; min-height: 100vh; width: 100%; overflow-x: hidden; }
 .screen.active { display: block; }
 
 /* ═══════════════════════════════════
@@ -412,10 +419,13 @@ input[type="text"].error {
 
 .user-greeting {
   text-align: center;
-  padding: 8px 20px 0;
-  font-size: 0.88em;
+  padding: 8px 16px 0;
+  font-size: 0.85em;
   color: var(--dark-green);
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ═══════════════════════════════════
@@ -675,17 +685,17 @@ input[type="text"].error {
   max-width: 100%;
 }
 
-.chips { display: flex; flex-direction: column; gap: 2px; }
+.chips { display: flex; flex-direction: column; gap: 3px; }
 .chip {
-  font-size: 0.61em;
+  font-size: 0.88em;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 8px;
+  padding: 2px 4px;
+  border-radius: 7px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 100%;
-  line-height: 1.5;
+  line-height: 1.45;
+  text-align: center;
 }
 .chip.lunch  { background: #ffe5d5; color: #bf360c; }
 .chip.dinner { background: #e8eaf6; color: #283593; }
