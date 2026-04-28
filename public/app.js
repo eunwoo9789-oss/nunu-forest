@@ -520,7 +520,7 @@ function openDateDetail(dateStr) {
     const applyBtn = document.createElement('button');
     applyBtn.className = 'btn btn-primary';
     applyBtn.style.flex = '1';
-    applyBtn.textContent = '🌿 신청하기';
+    applyBtn.textContent = '🌿 약속하기';
     applyBtn.onclick = () => {
       closeModal('detail-modal');
       S.pendingDate   = dateStr;
