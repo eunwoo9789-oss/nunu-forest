@@ -246,20 +246,7 @@ async function submitName() {
         return;
       }
 
-      // 실명 미등록 신규 유저: 닉네임 변경 시 새 토큰 발급
-      if (savedName && savedName !== name) {
-        S.token = mkToken();
-        localStorage.setItem('ac_token', S.token);
-      }
-
-      // 닉네임으로도 토큰 복원 시도
-      const byName = all.find(r =>
-        r.name.trim().toLowerCase() === name.trim().toLowerCase()
-      );
-      if (byName) {
-        S.token = byName.token;
-        localStorage.setItem('ac_token', S.token);
-      }
+      // 신규 유저: 항상 새 토큰 유지 (닉네임 기반 토큰 복원 제거 — 실명이 주 식별자)
     } catch { /* 오프라인 */ }
   }
 
