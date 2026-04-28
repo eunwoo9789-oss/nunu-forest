@@ -590,7 +590,6 @@ function advanceFromOption() {
 수령 원하는 날을 선택해 표시해주세요. 인원을 모아 배달 가능한 날로 조율 후 제가 다시 안내해 드릴 예정입니다.<br><br>
 <span class="bread-note">
   🏢 <strong>한리 친구들은 언주에서 나눠줄 예정이랍니다.</strong><br>
-  🚫🏠 <strong>그날만큼은 재택 금지!</strong><br>
   빵만 주고받고 빠빠이해요. 👋
 </span>`;
     } else {

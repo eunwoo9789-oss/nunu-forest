@@ -803,8 +803,8 @@ input[type="text"].error {
   color: var(--dark-brown);
   margin-bottom: 14px;
 }
-.modal-actions { display: flex; gap: 10px; }
-.modal-actions .btn { flex: 1; }
+.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.modal-actions .btn { flex: 1; min-width: 120px; white-space: nowrap; }
 
 /* 날짜 상세 모달 */
 .detail-sections { display: flex; flex-direction: column; gap: 10px; }
@@ -1177,7 +1177,7 @@ input[type="text"].error {
   .welcome-title { font-size: 1.4em; }
   .day-cell { min-height: 68px; padding: 4px; }
   .chip { font-size: 0.57em; }
-  .modal-card { padding: 24px 18px; }
+  .modal-card { padding: 20px 16px; }
   .tree-row { bottom: 68px; }
   .tree { font-size: calc(var(--size) * 0.75); }
   .opt-icon-wrap { width: 46px; height: 46px; font-size: 1.45em; }
@@ -1186,4 +1186,21 @@ input[type="text"].error {
   .cs-t-food { display: none; }
   .admin-opt-row { flex-direction: column; }
   .v-house, .v-shop, .v-tent { font-size: calc(var(--sz) * 0.75); }
+
+  /* 확인 모달 버튼: 좁은 화면에서 세로 배치 */
+  #confirm-modal .modal-actions,
+  #edit-confirm-modal .modal-actions {
+    flex-direction: column;
+  }
+  #confirm-modal .modal-actions .btn,
+  #edit-confirm-modal .modal-actions .btn {
+    width: 100%;
+  }
+
+  /* 입장 안내 팝업 모바일 */
+  .wi-card { padding: 20px 16px; }
+  .wi-emoji { font-size: 2.2em; margin-bottom: 6px; }
+  .wi-title { font-size: 0.98em; margin-bottom: 12px; }
+  .wi-body { font-size: 0.83em; padding: 12px 13px; gap: 6px; }
+  .wi-btn { font-size: 0.95em; }
 }
