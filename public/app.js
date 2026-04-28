@@ -117,7 +117,7 @@ function enterCalendar() {
     document.getElementById('my-reservation-btn').textContent = '👑 전체현황';
   } else {
     document.getElementById('user-greeting').textContent =
-      `🌿 ${S.userName}님, 날짜를 눌러 참석 현황을 확인해요!`;
+      `🌿 ${S.userName}님, 날짜를 눌러 약속 현황을 확인해요!`;
     document.getElementById('my-reservation-btn').textContent = '내 약속 📋';
   }
 
