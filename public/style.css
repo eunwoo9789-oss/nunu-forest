@@ -303,6 +303,15 @@ input[type="text"].error {
   animation: shake .3s;
 }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.input-error {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #c62828;
+  padding: 4px 2px;
+  animation: fadeIn .2s ease-out;
+}
+.input-error.hidden { display: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ═══════════════════════════════════
    BUTTONS

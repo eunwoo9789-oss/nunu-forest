@@ -139,9 +139,10 @@ function bindAll() {
       nInput.value = document.getElementById('realname-input').value;
     }
   });
-  // 닉네임을 직접 수정하면 플래그 설정
+  // 닉네임을 직접 수정하면 플래그 설정 + 에러 메시지 초기화
   document.getElementById('name-input').addEventListener('input', () => {
     document.getElementById('name-input').dataset.manuallyEdited = '1';
+    document.getElementById('name-error').classList.add('hidden');
   });
 
   document.getElementById('prev-month').addEventListener('click', () => shiftMonth(-1));
@@ -246,7 +247,21 @@ async function submitName() {
         return;
       }
 
-      // 신규 유저: 항상 새 토큰 유지 (닉네임 기반 토큰 복원 제거 — 실명이 주 식별자)
+      // 신규 유저: 닉네임 중복 검사 (실명이 다른 사람이 같은 닉네임 사용 중인지 확인)
+      const dupNick = all.find(r => {
+        const existingReal = (r.realName || r.name).trim().toLowerCase();
+        return r.name.trim().toLowerCase() === name.trim().toLowerCase() &&
+               existingReal !== realName.trim().toLowerCase();
+      });
+      if (dupNick) {
+        const errEl = document.getElementById('name-error');
+        errEl.textContent = '이미 숲에 살고 있는 닉네임이에요! 다른 닉네임을 골라주세요 🐿️';
+        errEl.classList.remove('hidden');
+        nInput.classList.add('error');
+        setTimeout(() => nInput.classList.remove('error'), 600);
+        return;
+      }
+
     } catch { /* 오프라인 */ }
   }
 
