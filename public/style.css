@@ -244,9 +244,11 @@ body {
 }
 .welcome-text {
   color: var(--brown);
-  line-height: 2;
+  line-height: 1.85;
   margin-bottom: 22px;
-  font-size: 0.93em;
+  font-size: 0.88em;
+  word-break: keep-all;
+  text-align: left;
 }
 .input-group { display: flex; flex-direction: column; gap: 10px; }
 
@@ -946,6 +948,27 @@ input[type="text"].error {
 .opt-info strong { display: block; font-size: 0.97em; font-weight: 800; color: var(--dark-brown); margin-bottom: 2px; }
 .opt-info span   { display: block; font-size: 0.77em; color: var(--brown); }
 .opt-info em     { display: block; font-size: 0.73em; color: var(--light-brown); font-style: normal; margin-top: 3px; }
+
+.opt-capacity {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 0.72em;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(46, 191, 101, 0.12);
+  border-radius: 20px;
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+}
+.opt-capacity.warn { color: #e65100; background: rgba(230, 81, 0, 0.12); }
+.opt-capacity.full { color: #b71c1c; background: rgba(183, 28, 28, 0.12); font-size: 0.8em; }
+
+.option-item.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.option-item.disabled .opt-check { display: none; }
 
 .opt-check {
   font-size: 1.4em;

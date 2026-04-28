@@ -202,7 +202,7 @@ async function submitName() {
   const rnInput   = document.getElementById('realname-input');
   const nInput    = document.getElementById('name-input');
   const realName  = rnInput.value.trim();
-  const name      = nInput.value.trim() || realName; // 닉네임 미입력 시 실명으로 대체
+  const name      = nInput.value.trim() || realName;
   const savedName = localStorage.getItem('ac_name');
 
   if (!realName) {
@@ -219,22 +219,39 @@ async function submitName() {
   } else {
     S.isAdmin = false;
 
-    // 닉네임이 바뀌면 새 토큰 발급
-    if (savedName && savedName !== name) {
-      S.token = mkToken();
-      localStorage.setItem('ac_token', S.token);
-    }
-
-    // 서버에서 동일 닉네임 약속 찾아 토큰 복원 (새로고침 후에도 수정 가능)
     try {
       const resp = await fetch('/api/reservations');
       const all  = await resp.json();
       S.reservations = all;
-      const existing = all.find(r =>
+
+      // 실명으로 기존 유저 인식 → 토큰·닉네임 자동 복원
+      const byRealName = all.find(r =>
+        r.realName && r.realName.trim().toLowerCase() === realName.trim().toLowerCase()
+      );
+      if (byRealName) {
+        S.token    = byRealName.token;
+        S.userName = byRealName.name;
+        S.realName = realName;
+        localStorage.setItem('ac_token',    S.token);
+        localStorage.setItem('ac_name',     S.userName);
+        localStorage.setItem('ac_realname', realName);
+        if (!S.musicOn) startMusic();
+        enterCalendar();
+        return;
+      }
+
+      // 실명 미등록 신규 유저: 닉네임 변경 시 새 토큰 발급
+      if (savedName && savedName !== name) {
+        S.token = mkToken();
+        localStorage.setItem('ac_token', S.token);
+      }
+
+      // 닉네임으로도 토큰 복원 시도
+      const byName = all.find(r =>
         r.name.trim().toLowerCase() === name.trim().toLowerCase()
       );
-      if (existing) {
-        S.token = existing.token;
+      if (byName) {
+        S.token = byName.token;
         localStorage.setItem('ac_token', S.token);
       }
     } catch { /* 오프라인 */ }
@@ -358,6 +375,7 @@ function renderCal() {
           document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
           document.getElementById('option-next-btn').disabled = true;
           document.getElementById('option-date-title').textContent = fmtKo(dateStr);
+          updateOptionCapacity(dateStr);
           openModal('option-modal');
         } else {
           openDateDetail(dateStr);
@@ -493,6 +511,7 @@ function openDateDetail(dateStr) {
       document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
       document.getElementById('option-next-btn').disabled = true;
       document.getElementById('option-date-title').textContent = dateKo;
+      updateOptionCapacity(dateStr);
       openModal('option-modal');
     };
 
@@ -527,7 +546,26 @@ function cancelEditMode() {
 /* ═══════════════════════════════════
    OPTION MODAL
 ═══════════════════════════════════ */
+function updateOptionCapacity(dateStr) {
+  const MAX = 5;
+  ['lunch', 'dinner'].forEach(opt => {
+    const count = S.reservations.filter(r => r.date === dateStr && r.option === opt).length;
+    const item  = document.querySelector(`.option-item[data-option="${opt}"]`);
+    const badge = item.querySelector('.opt-capacity');
+    if (!badge) return;
+    const full = count >= MAX;
+    const warn = count >= MAX - 1;
+    badge.textContent = full ? '마감 🚫' : `${count} / ${MAX}명`;
+    badge.className   = 'opt-capacity' + (full ? ' full' : warn ? ' warn' : '');
+    item.classList.toggle('disabled', full);
+  });
+  // 성심당 인원 제한 없음
+  document.querySelector('.option-item[data-option="bread"]').classList.remove('disabled');
+}
+
 function selectOption(opt) {
+  const item = document.querySelector(`.option-item[data-option="${opt}"]`);
+  if (item && item.classList.contains('disabled')) return;
   document.querySelectorAll('.option-item').forEach(el => {
     el.classList.toggle('selected', el.dataset.option === opt);
   });

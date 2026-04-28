@@ -83,6 +83,8 @@ app.post('/api/reservations', async (req, res) => {
   const isAdmin = token === ADMIN_TOKEN;
   const list = await storage.getAll();
 
+  const CAPACITY = 5;
+
   if (!isAdmin) {
     if (list.find(r => r.token === token))
       return res.status(400).json({ error: '이미 약속하셨습니다. 내 약속에서 수정 또는 취소 후 재신청해주세요.' });
@@ -90,7 +92,13 @@ app.post('/api/reservations', async (req, res) => {
     if (list.find(r =>
       r.name.trim().toLowerCase() === name.trim().toLowerCase() && r.token !== token
     ))
-      return res.status(400).json({ error: `'${name}' 닉네임으로 이미 약속이 존재합니다. 다른 닉네임을 사용해주세요.` });
+      return res.status(400).json({ error: '이미 숲에 살고 있는 닉네임이에요! 다른 닉네임을 골라주세요 🐿️' });
+
+    if (option === 'lunch' || option === 'dinner') {
+      const seatCount = list.filter(r => r.date === date && r.option === option).length;
+      if (seatCount >= CAPACITY)
+        return res.status(400).json({ error: `해당 세션은 이미 ${CAPACITY}명이 꽉 찼어요! 다른 날짜나 옵션을 선택해주세요. 😢` });
+    }
   }
 
   const entryToken = isAdmin ? uuidv4() : token;
@@ -113,6 +121,13 @@ app.put('/api/reservations/:id', async (req, res) => {
   if (!existing) return res.status(404).json({ error: '약속을 찾을 수 없습니다.' });
   if (existing.token !== token && token !== ADMIN_TOKEN)
     return res.status(403).json({ error: '권한이 없습니다.' });
+
+  if (token !== ADMIN_TOKEN && (option === 'lunch' || option === 'dinner')) {
+    const list = await storage.getAll();
+    const seatCount = list.filter(r => r.date === date && r.option === option && r.id !== id).length;
+    if (seatCount >= 5)
+      return res.status(400).json({ error: '해당 세션은 이미 5명이 꽉 찼어요! 다른 날짜나 옵션을 선택해주세요. 😢' });
+  }
 
   res.json(await storage.update(id, { date, option }));
 });
