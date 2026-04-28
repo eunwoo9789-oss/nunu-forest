@@ -65,13 +65,21 @@
       <p class="welcome-text">
         반가워요!<br>
         고마운 마음을 담아 보답하는 자리를<br>
-        만들고자 이 링크를 보냅니다. 🌿<br><br>
-        참석하는 당신의 이름 또는 닉네임을<br>
-        적어주세요!
+        만들고자 이 링크를 보냅니다. 🌿
       </p>
       <div class="input-group">
-        <input type="text" id="name-input" placeholder="이름 또는 닉네임" maxlength="12" autocomplete="off">
-        <button id="name-submit" class="btn btn-primary">입장하기 🌿</button>
+        <div class="input-field-wrap">
+          <div class="input-label-top">실명 <span class="required-mark">*</span></div>
+          <input type="text" id="realname-input" placeholder="본명을 입력해주세요" maxlength="20" autocomplete="name">
+          <div class="input-helper">🤫 호스트 확인용 (저만 확인해요!)</div>
+        </div>
+        <div class="input-field-wrap">
+          <div class="input-label-top">닉네임 <span class="optional-mark">(선택)</span></div>
+          <input type="text" id="name-input" placeholder="캘린더에 표시될 이름" maxlength="12" autocomplete="off">
+          <div class="input-helper">🌳 캘린더 공유용 (이 링크를 받은 또다른 친구들도 볼 수 있어요!)</div>
+          <div class="input-hint">(예: 8층 불주먹, 떡잎방범대원, F2, 스페셜T 등<br>우리끼리만 아는 별명이어도 좋아요)</div>
+        </div>
+        <button id="name-submit" class="btn btn-primary">숲으로 입장하기 🌿</button>
       </div>
     </div>
 
@@ -254,7 +262,7 @@
 
       <div class="modal-actions">
         <button id="option-cancel-btn" class="btn btn-ghost">닫기</button>
-        <button id="option-next-btn" class="btn btn-primary" disabled>다음으로 🌿</button>
+        <button id="option-next-btn" class="btn btn-primary" disabled>약속 잡으러 가기 📅</button>
       </div>
     </div>
   </div>

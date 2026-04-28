@@ -76,7 +76,7 @@ app.get('/api/reservations', async (req, res) => {
 });
 
 app.post('/api/reservations', async (req, res) => {
-  const { name, date, option, token } = req.body;
+  const { name, realName, date, option, token } = req.body;
   if (!name || !date || !option || !token)
     return res.status(400).json({ error: '필수 정보가 없습니다.' });
 
@@ -94,7 +94,14 @@ app.post('/api/reservations', async (req, res) => {
   }
 
   const entryToken = isAdmin ? uuidv4() : token;
-  const reservation = { id: uuidv4(), name, date, option, token: entryToken, createdAt: new Date().toISOString() };
+  const reservation = {
+    id: uuidv4(),
+    name,
+    realName: realName || name,
+    date, option,
+    token: entryToken,
+    createdAt: new Date().toISOString()
+  };
   res.json(await storage.add(reservation));
 });
 

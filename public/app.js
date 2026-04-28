@@ -46,6 +46,7 @@ const HOLIDAYS = {
 ═══════════════════════════════════ */
 const S = {
   userName: null,
+  realName: null,
   token: null,
   isAdmin: false,
   month: new Date().getMonth(),
@@ -67,8 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
   S.token = localStorage.getItem('ac_token') || mkToken();
   localStorage.setItem('ac_token', S.token);
 
-  const savedName = localStorage.getItem('ac_name');
-  if (savedName) document.getElementById('name-input').value = savedName;
+  const savedName     = localStorage.getItem('ac_name') || '';
+  const savedRealName = localStorage.getItem('ac_realname') || '';
+  const rnInput = document.getElementById('realname-input');
+  const nInput  = document.getElementById('name-input');
+  if (savedRealName) rnInput.value = savedRealName;
+  if (savedName)     nInput.value  = savedName;
+  // 닉네임이 실명과 다르게 저장되어 있으면 수동 수정된 것
+  if (savedName && savedRealName && savedName !== savedRealName) {
+    nInput.dataset.manuallyEdited = '1';
+  }
 
   bindAll();
   updateSceneTime();
@@ -121,6 +130,19 @@ function enterCalendar() {
 function bindAll() {
   document.getElementById('name-submit').addEventListener('click', submitName);
   document.getElementById('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
+  document.getElementById('realname-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
+
+  // 실명 입력 시 닉네임 자동 복사 (닉네임이 수동 수정되지 않은 경우에만)
+  document.getElementById('realname-input').addEventListener('input', () => {
+    const nInput = document.getElementById('name-input');
+    if (!nInput.dataset.manuallyEdited) {
+      nInput.value = document.getElementById('realname-input').value;
+    }
+  });
+  // 닉네임을 직접 수정하면 플래그 설정
+  document.getElementById('name-input').addEventListener('input', () => {
+    document.getElementById('name-input').dataset.manuallyEdited = '1';
+  });
 
   document.getElementById('prev-month').addEventListener('click', () => shiftMonth(-1));
   document.getElementById('next-month').addEventListener('click', () => shiftMonth(+1));
@@ -177,17 +199,19 @@ function bindAll() {
    WELCOME
 ═══════════════════════════════════ */
 async function submitName() {
-  const input     = document.getElementById('name-input');
-  const name      = input.value.trim();
+  const rnInput   = document.getElementById('realname-input');
+  const nInput    = document.getElementById('name-input');
+  const realName  = rnInput.value.trim();
+  const name      = nInput.value.trim() || realName; // 닉네임 미입력 시 실명으로 대체
   const savedName = localStorage.getItem('ac_name');
 
-  if (!name) {
-    input.classList.add('error');
-    setTimeout(() => input.classList.remove('error'), 600);
+  if (!realName) {
+    rnInput.classList.add('error');
+    setTimeout(() => rnInput.classList.remove('error'), 600);
     return;
   }
 
-  const isAdmin = name === ADMIN_NAME;
+  const isAdmin = name === ADMIN_NAME || realName === ADMIN_NAME;
 
   if (isAdmin) {
     S.isAdmin = true;
@@ -195,7 +219,7 @@ async function submitName() {
   } else {
     S.isAdmin = false;
 
-    // 이름이 바뀌면 새 토큰 발급
+    // 닉네임이 바뀌면 새 토큰 발급
     if (savedName && savedName !== name) {
       S.token = mkToken();
       localStorage.setItem('ac_token', S.token);
@@ -217,7 +241,9 @@ async function submitName() {
   }
 
   S.userName = name;
+  S.realName = realName;
   localStorage.setItem('ac_name', name);
+  localStorage.setItem('ac_realname', realName);
   if (!S.musicOn) startMusic();
   enterCalendar();
 }
@@ -225,9 +251,21 @@ async function submitName() {
 function goHome() {
   document.querySelectorAll('.modal:not(.hidden)').forEach(m => m.classList.add('hidden'));
   cancelEditMode();
-  const currentName = S.userName || localStorage.getItem('ac_name') || '';
-  document.getElementById('name-input').value = currentName;
+
+  const savedRN = localStorage.getItem('ac_realname') || '';
+  const savedN  = localStorage.getItem('ac_name') || '';
+  document.getElementById('realname-input').value = savedRN;
+  document.getElementById('name-input').value = savedN;
+
+  const nInput = document.getElementById('name-input');
+  if (savedN && savedRN && savedN !== savedRN) {
+    nInput.dataset.manuallyEdited = '1';
+  } else {
+    delete nInput.dataset.manuallyEdited;
+  }
+
   S.userName = null;
+  S.realName = null;
   S.isAdmin  = false;
   enterWelcome();
 }
@@ -371,7 +409,9 @@ function openDateDetail(dateStr) {
           wrap.className = 'admin-attendee';
           const chip = document.createElement('span');
           chip.className = `dchip ${opt}`;
-          chip.textContent = r.name;
+          const adminLabel = r.realName && r.realName !== r.name
+            ? `${r.realName}(${r.name})` : r.name;
+          chip.textContent = adminLabel;
           const editBtn = document.createElement('button');
           editBtn.className = 'admin-micro-btn edit';
           editBtn.textContent = '✏️';
@@ -509,9 +549,9 @@ function advanceFromOption() {
   } else {
     if (S.pendingOption === 'bread') {
       document.getElementById('confirm-emoji').textContent = '🍞';
-      document.getElementById('confirm-title').textContent = `성심당찬스기다릴래요`;
+      document.getElementById('confirm-title').textContent = `성심당찬스기다릴래요\n📅 ${fmtKo(S.pendingDate)}`;
       document.getElementById('confirm-question').textContent =
-        '가능 일정 취합 후 호스트가 별도 연락드릴 예정입니다 🎁';
+        '성심당 빵은 랜덤! 그치만 맛잘알 나를 믿어주세요. 🥐\n수령 원하는 날을 선택해 표시해주세요. 인원이 충분하고 한번에 가져다줄 수 있는 날로 조율 후 제가 다시 안내해 드릴 예정이랍니다. 빵만 주고받고 빠빠이할 예정이에요.';
     } else {
       document.getElementById('confirm-emoji').textContent = '🌿';
       document.getElementById('confirm-title').textContent =
@@ -539,8 +579,8 @@ async function doConfirm() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: S.userName, date: S.pendingDate,
-        option: S.pendingOption, token: S.token
+        name: S.userName, realName: S.realName || S.userName,
+        date: S.pendingDate, option: S.pendingOption, token: S.token
       }),
     });
     const data = await res.json();
@@ -601,17 +641,20 @@ function openMyModal() {
           <p>아직 약속한 일정이 없어요.</p>
         </div>`;
     } else {
-      listEl.innerHTML = all.map(r => `
+      listEl.innerHTML = all.map(r => {
+        const adminLabel = r.realName && r.realName !== r.name
+          ? `${r.realName}(${r.name})` : r.name;
+        return `
         <div class="res-card">
-          <div class="res-card-name">👤 ${r.name}</div>
+          <div class="res-card-name">👤 ${adminLabel}</div>
           <div class="res-card-date">📅 ${fmtKo(r.date)}</div>
           <div class="res-card-opt">${OPT[r.option].emoji} ${OPT[r.option].label}</div>
           <div class="res-card-btns">
             <button class="btn-edit-sm" onclick="closeModal('my-modal');adminStartEdit('${r.id}')">✏️ 수정</button>
             <button class="btn-cancel-sm" onclick="adminDeleteFromPanel('${r.id}')">🗑️ 삭제</button>
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
   } else {
     titleEl.textContent = '📋 내 약속 현황';
