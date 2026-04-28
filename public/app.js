@@ -549,9 +549,15 @@ function advanceFromOption() {
   } else {
     if (S.pendingOption === 'bread') {
       document.getElementById('confirm-emoji').textContent = '🍞';
-      document.getElementById('confirm-title').textContent = `성심당찬스기다릴래요\n📅 ${fmtKo(S.pendingDate)}`;
-      document.getElementById('confirm-question').textContent =
-        '성심당 빵은 랜덤! 그치만 맛잘알 나를 믿어주세요. 🥐\n수령 원하는 날을 선택해 표시해주세요. 인원이 충분하고 한번에 가져다줄 수 있는 날로 조율 후 제가 다시 안내해 드릴 예정이랍니다. 빵만 주고받고 빠빠이할 예정이에요.';
+      document.getElementById('confirm-title').textContent = `성심당 찬스기다릴래요\n📅 ${fmtKo(S.pendingDate)}`;
+      document.getElementById('confirm-question').innerHTML =
+        `성심당 빵은 랜덤! 그치만 맛잘알 저를 믿어주세요. 🥐<br>
+수령 원하는 날을 선택해 표시해주세요. 인원을 모아 배달 가능한 날로 조율 후 제가 다시 안내해 드릴 예정입니다.<br><br>
+<span class="bread-note">
+  🏢 <strong>한리 친구들은 언주에서 나눠줄 예정이랍니다.</strong><br>
+  🚫🏠 <strong>그날만큼은 재택 금지!</strong><br>
+  빵만 주고받고 빠빠이해요. 👋
+</span>`;
     } else {
       document.getElementById('confirm-emoji').textContent = '🌿';
       document.getElementById('confirm-title').textContent =

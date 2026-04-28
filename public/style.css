@@ -978,6 +978,17 @@ input[type="text"].error {
   line-height: 1.75;
   text-align: left;
 }
+.bread-note {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #fff8f0, #fdebd0);
+  border-left: 4px solid #a1887f;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  font-size: 0.9em;
+  line-height: 1.9;
+  color: #4e342e;
+}
 
 /* 내 약속 모달 */
 .my-list { display: flex; flex-direction: column; gap: 10px; }
