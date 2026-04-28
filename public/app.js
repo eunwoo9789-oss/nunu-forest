@@ -187,10 +187,16 @@ function bindAll() {
     btn.addEventListener('click', () => selectAdminOpt(btn.dataset.opt));
   });
 
+  document.getElementById('welcome-info-ok-btn').addEventListener('click', () => {
+    closeModal('welcome-info-modal');
+    enterCalendar();
+  });
+
   document.querySelectorAll('.modal-bg').forEach(bg => {
     bg.addEventListener('click', () => {
       const modal = bg.closest('.modal');
-      if (modal) closeModal(modal.id);
+      // welcome-info-modal은 배경 클릭으로 닫히지 않도록 함
+      if (modal && modal.id !== 'welcome-info-modal') closeModal(modal.id);
     });
   });
 }
@@ -236,7 +242,7 @@ async function submitName() {
         localStorage.setItem('ac_name',     S.userName);
         localStorage.setItem('ac_realname', realName);
         if (!S.musicOn) startMusic();
-        enterCalendar();
+        openModal('welcome-info-modal');
         return;
       }
 
@@ -262,7 +268,11 @@ async function submitName() {
   localStorage.setItem('ac_name', name);
   localStorage.setItem('ac_realname', realName);
   if (!S.musicOn) startMusic();
-  enterCalendar();
+  if (S.isAdmin) {
+    enterCalendar();
+  } else {
+    openModal('welcome-info-modal');
+  }
 }
 
 function goHome() {
