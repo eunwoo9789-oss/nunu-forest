@@ -1028,26 +1028,26 @@ input[type="text"].error {
   border: 2px solid rgba(46,191,101,0.22);
   max-width: 360px;
 }
-.wi-emoji { font-size: 2.8em; margin-bottom: 8px; }
+.wi-emoji { font-size: 2.2em; margin-bottom: 6px; }
 .wi-title {
   font-family: 'Nunito', sans-serif;
-  font-size: 1.08em;
+  font-size: 0.97em;
   font-weight: 900;
   color: var(--dark-brown);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .wi-body {
   text-align: left;
   background: white;
   border-radius: var(--r-md);
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  font-size: 0.87em;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 0.81em;
   color: var(--brown);
-  line-height: 1.8;
+  line-height: 1.75;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
 }
 .wi-highlight {

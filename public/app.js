@@ -226,12 +226,17 @@ async function submitName() {
   } else {
     S.isAdmin = false;
 
+    // 로그인 시 항상 새 토큰으로 초기화 — localStorage에 잔류한 타인 토큰 오염 방지
+    // byRealName으로 본인 확인 성공 시에만 기존 토큰 복원
+    S.token = mkToken();
+    localStorage.setItem('ac_token', S.token);
+
     try {
       const resp = await fetch('/api/reservations');
       const all  = await resp.json();
       S.reservations = all;
 
-      // 실명으로 기존 유저 인식 → 토큰·닉네임 자동 복원
+      // 실명으로 기존 유저 인식 → 올바른 토큰·닉네임 복원
       const byRealName = all.find(r =>
         r.realName && r.realName.trim().toLowerCase() === realName.trim().toLowerCase()
       );
@@ -247,12 +252,13 @@ async function submitName() {
         return;
       }
 
-      // 신규 유저: 닉네임 중복 검사 (실명이 다른 사람이 같은 닉네임 사용 중인지 확인)
-      const dupNick = all.find(r => {
-        const existingReal = (r.realName || r.name).trim().toLowerCase();
-        return r.name.trim().toLowerCase() === name.trim().toLowerCase() &&
-               existingReal !== realName.trim().toLowerCase();
-      });
+      // 신규 유저: 닉네임 중복 검사
+      const lowerName = name.trim().toLowerCase();
+      const lowerReal = realName.trim().toLowerCase();
+      const dupNick = all.find(r =>
+        r.name.trim().toLowerCase() === lowerName &&
+        (r.realName || r.name).trim().toLowerCase() !== lowerReal
+      );
       if (dupNick) {
         const errEl = document.getElementById('name-error');
         errEl.textContent = '이미 숲에 살고 있는 닉네임이에요! 다른 닉네임을 골라주세요 🐿️';
