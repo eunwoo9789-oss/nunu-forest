@@ -71,6 +71,32 @@ if (process.env.MONGO_URI) {
 }
 
 /* ══════════════════════════════════════
+   NTFY NOTIFICATIONS
+══════════════════════════════════════ */
+const NTFY_TOPIC = process.env.NTFY_TOPIC || '';
+const OPT_KO = { lunch: '점심 🍱', dinner: '저녁 🍽️', bread: '성심당 🍞' };
+
+function dName(r) {
+  return r.realName && r.realName !== r.name ? `${r.realName}(${r.name})` : r.name;
+}
+
+async function notifyAdmin(title, body) {
+  if (!NTFY_TOPIC) return;
+  try {
+    await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+      method: 'POST',
+      headers: {
+        'Title': encodeURIComponent(title),
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+      body,
+    });
+  } catch (e) {
+    console.error('ntfy 알림 실패:', e.message);
+  }
+}
+
+/* ══════════════════════════════════════
    API ROUTES
 ══════════════════════════════════════ */
 app.get('/api/reservations', async (req, res) => {
@@ -113,7 +139,12 @@ app.post('/api/reservations', async (req, res) => {
     token: entryToken,
     createdAt: new Date().toISOString()
   };
-  res.json(await storage.add(reservation));
+  const saved = await storage.add(reservation);
+  res.json(saved);
+  if (!isAdmin) {
+    const memoLine = saved.memo ? `\n💬 ${saved.memo}` : '';
+    notifyAdmin('🌿 새 약속!', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
+  }
 });
 
 app.put('/api/reservations/:id', async (req, res) => {
@@ -132,7 +163,11 @@ app.put('/api/reservations/:id', async (req, res) => {
       return res.status(400).json({ error: '해당 세션은 이미 5명이 꽉 찼어요! 다른 날짜나 옵션을 선택해주세요. 😢' });
   }
 
-  res.json(await storage.update(id, { date, option }));
+  const updated = await storage.update(id, { date, option });
+  res.json(updated);
+  if (token !== ADMIN_TOKEN) {
+    notifyAdmin('✏️ 약속 변경', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}`);
+  }
 });
 
 app.patch('/api/reservations/:id/nickname', async (req, res) => {
@@ -173,6 +208,9 @@ app.delete('/api/reservations/:id', async (req, res) => {
 
   await storage.remove(id);
   res.json({ success: true });
+  if (token !== ADMIN_TOKEN) {
+    notifyAdmin('🍂 약속 취소', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
+  }
 });
 
 /* ══════════════════════════════════════
