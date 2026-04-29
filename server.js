@@ -1,6 +1,7 @@
 const express = require('express');
 const fs      = require('fs');
 const path    = require('path');
+const https   = require('https');
 const { v4: uuidv4 } = require('uuid');
 
 const app  = express();
@@ -80,20 +81,30 @@ function dName(r) {
   return r.realName && r.realName !== r.name ? `${r.realName}(${r.name})` : r.name;
 }
 
-async function notifyAdmin(title, body) {
-  if (!NTFY_TOPIC) return;
-  try {
-    await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+function notifyAdmin(tag, body) {
+  if (!NTFY_TOPIC) {
+    console.log('[ntfy] NTFY_TOPIC 없음 - 알림 스킵');
+    return;
+  }
+  console.log(`[ntfy] 전송 시작 → topic=${NTFY_TOPIC}, tag=${tag}`);
+  const text = Buffer.from(`${tag}\n${body}`, 'utf8');
+  const req = https.request(
+    {
+      hostname: 'ntfy.sh',
+      path: `/${NTFY_TOPIC}`,
       method: 'POST',
       headers: {
-        'Title': title,
         'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Length': text.length,
       },
-      body,
-    });
-  } catch (e) {
-    console.error('ntfy 알림 실패:', e.message);
-  }
+    },
+    res => {
+      console.log(`[ntfy] 응답 상태: ${res.statusCode}`);
+      res.resume();
+    }
+  );
+  req.on('error', e => console.error('[ntfy] 오류:', e.message));
+  req.end(text);
 }
 
 /* ══════════════════════════════════════
@@ -143,7 +154,7 @@ app.post('/api/reservations', async (req, res) => {
   res.json(saved);
   if (!isAdmin) {
     const memoLine = saved.memo ? `\n💬 ${saved.memo}` : '';
-    notifyAdmin('New Reservation', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
+    notifyAdmin('1', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
   }
 });
 
@@ -169,7 +180,7 @@ app.put('/api/reservations/:id', async (req, res) => {
   res.json(updated);
   if (token !== ADMIN_TOKEN) {
     const memoLine = updated.memo ? `\n💬 ${updated.memo}` : '';
-    notifyAdmin('Updated', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
+    notifyAdmin('2', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
   }
 });
 
@@ -212,7 +223,7 @@ app.delete('/api/reservations/:id', async (req, res) => {
   await storage.remove(id);
   res.json({ success: true });
   if (token !== ADMIN_TOKEN) {
-    notifyAdmin('Cancelled', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
+    notifyAdmin('0', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
   }
 });
 
