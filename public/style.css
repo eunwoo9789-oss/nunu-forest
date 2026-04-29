@@ -1049,7 +1049,7 @@ input[type="text"].error {
   margin-bottom: 22px;
   white-space: pre-line;
   line-height: 1.75;
-  text-align: left;
+  text-align: center;
 }
 .bread-note {
   display: block;
@@ -1061,6 +1061,7 @@ input[type="text"].error {
   font-size: 0.9em;
   line-height: 1.9;
   color: #4e342e;
+  text-align: left;
 }
 
 /* 입장 안내 팝업 */
