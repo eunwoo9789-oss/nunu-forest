@@ -313,6 +313,7 @@ function goHome() {
   S.userName = null;
   S.realName = null;
   S.isAdmin  = false;
+  renderNickCloud();
   enterWelcome();
 }
 
@@ -645,7 +646,30 @@ async function fetchAll() {
     const res = await fetch('/api/reservations');
     S.reservations = await res.json();
     if (document.getElementById('calendar-screen').classList.contains('active')) renderCal();
+    if (document.getElementById('welcome-screen').classList.contains('active')) renderNickCloud();
   } catch { /* offline */ }
+}
+
+function renderNickCloud() {
+  const wrap  = document.getElementById('nick-cloud-wrap');
+  const cloud = document.getElementById('nick-cloud');
+  if (!wrap || !cloud) return;
+
+  const nicks = [...new Set(S.reservations.map(r => r.name))];
+  if (nicks.length === 0) { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = '';
+
+  const shuffled = [...nicks].sort(() => Math.random() - 0.5);
+  const sizes  = ['nc-sm', 'nc-md', 'nc-lg'];
+  const colors = ['nc-green', 'nc-brown', 'nc-blue', 'nc-orange', 'nc-purple'];
+
+  cloud.innerHTML = shuffled.map(nick => {
+    const sz  = sizes [Math.floor(Math.random() * sizes.length)];
+    const cl  = colors[Math.floor(Math.random() * colors.length)];
+    const deg = Math.floor(Math.random() * 11) - 5;
+    return `<span class="nick-chip ${sz} ${cl}" style="--rot:${deg}deg">${nick}</span>`;
+  }).join('');
 }
 
 async function doConfirm() {

@@ -252,6 +252,47 @@ body {
 }
 .input-group { display: flex; flex-direction: column; gap: 10px; }
 
+/* 닉네임 워드 클라우드 */
+.nick-cloud-wrap {
+  background: rgba(255,255,255,0.72);
+  border: 1.5px dashed rgba(46,191,101,0.45);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+}
+.nick-cloud-title {
+  font-size: 0.76em;
+  font-weight: 700;
+  color: var(--dark-green);
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+.nick-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.nick-chip {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-weight: 700;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform .15s, box-shadow .15s;
+  cursor: default;
+}
+.nick-chip:hover { transform: rotate(0deg) scale(1.12); box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+.nc-sm { font-size: 0.72em; }
+.nc-md { font-size: 0.88em; }
+.nc-lg { font-size: 1.02em; }
+.nc-green  { background: #e8f5e9; color: #2e7d32; }
+.nc-brown  { background: #efebe9; color: #4e342e; }
+.nc-blue   { background: #e3f2fd; color: #1565c0; }
+.nc-orange { background: #fff3e0; color: #e65100; }
+.nc-purple { background: #f3e5f5; color: #6a1b9a; }
+
 /* 입력 필드 묶음 */
 .input-field-wrap { display: flex; flex-direction: column; gap: 4px; }
 .input-label-top {
