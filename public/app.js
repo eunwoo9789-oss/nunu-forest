@@ -618,7 +618,9 @@ function advanceFromOption() {
     if (S.pendingOption === 'bread') {
       document.getElementById('confirm-emoji').textContent = '🍞';
       document.getElementById('confirm-title').textContent = `성심당 찬스기다릴래요\n📅 ${fmtKo(S.pendingDate)}`;
-      document.getElementById('confirm-question').innerHTML =
+      const bq = document.getElementById('confirm-question');
+      bq.style.textAlign = 'left';
+      bq.innerHTML =
         `성심당 빵은 랜덤! 그치만 맛잘알 저를 믿어주세요. 🥐<br>
 수령 원하는 날로 선택해 주세요.<br>
 인원을 모아 배달 가능한 날로 조율 후,<br>
@@ -632,7 +634,9 @@ function advanceFromOption() {
       document.getElementById('confirm-emoji').textContent = '🌿';
       document.getElementById('confirm-title').textContent =
         `${dateKo}\n${info.emoji} ${info.label}`;
-      document.getElementById('confirm-question').textContent = '에 해쳐모이시겠습니까?';
+      const cq = document.getElementById('confirm-question');
+      cq.textContent = '에 해쳐모이시겠습니까?';
+      cq.style.textAlign = 'center';
     }
     openModal('confirm-modal');
   }
