@@ -56,7 +56,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 60px;
+  padding-top: 0;
   padding-bottom: 100px;
   min-height: 100vh;
   background: linear-gradient(180deg, #5ecef5 0%, #9adff5 28%, #c8f5a8 58%, #7cce56 100%);
@@ -207,12 +207,68 @@ body {
   box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
 }
 
+/* 첫화면 자연 씬 스트립 */
+.welcome-top-scene {
+  position: relative;
+  width: 100%;
+  align-self: stretch;
+  flex-shrink: 0;
+  padding-top: 58px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.wts-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 0 8px;
+}
+.wts-village-row { margin-bottom: -2px; }
+.wts-bldg {
+  font-size: var(--sz, 2.4em);
+  filter: drop-shadow(1px 3px 5px rgba(0,0,0,0.22));
+  animation: houseBob 5s ease-in-out infinite;
+  animation-delay: var(--dly, 0s);
+  flex-shrink: 0;
+}
+.wts-tree {
+  font-size: var(--tsz, 2.8em);
+  animation: sway 4s ease-in-out infinite;
+  animation-delay: var(--dly, 0s);
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+  flex-shrink: 0;
+}
+.wts-flower {
+  font-size: 1.4em;
+  animation: flowerBob 3s ease-in-out infinite;
+  animation-delay: var(--fdly, 0s);
+  filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.15));
+  flex-shrink: 0;
+  align-self: flex-end;
+  margin-bottom: 3px;
+}
+.wts-walk {
+  position: absolute;
+  bottom: 28px;
+  font-size: 1.9em;
+  animation: walkAcross var(--spd, 20s) linear infinite;
+  animation-delay: var(--dly, 0s);
+  z-index: 6;
+  filter: drop-shadow(1px 2px 4px rgba(0,0,0,0.2));
+}
+.wts-grass {
+  height: 30px;
+  background: linear-gradient(180deg, #7cce56 0%, #4a9e2f 100%);
+  clip-path: polygon(0 100%,0 40%,2% 20%,4% 42%,7% 18%,10% 40%,13% 22%,16% 44%,19% 20%,22% 42%,25% 24%,28% 46%,31% 18%,34% 42%,37% 24%,40% 44%,43% 20%,46% 42%,49% 26%,52% 44%,55% 20%,58% 42%,61% 24%,64% 44%,67% 20%,70% 42%,73% 24%,76% 44%,79% 20%,82% 40%,85% 22%,88% 44%,91% 20%,94% 42%,97% 24%,100% 40%,100% 100%);
+  margin-top: 2px;
+}
+
 /* 웰컴 카드 */
 .welcome-card {
   background: rgba(255,255,255,0.94);
   backdrop-filter: blur(16px);
   border-radius: var(--r-xl);
-  padding: 46px 40px 42px;
+  padding: 38px 36px 40px;
   max-width: 440px;
   width: 92%;
   text-align: center;
@@ -1223,8 +1279,14 @@ input[type="text"].error {
    RESPONSIVE
 ═══════════════════════════════════ */
 @media (max-width: 480px) {
-  #welcome-screen { padding-top: 32px; }
-  .welcome-card { padding: 28px 18px; }
+  #welcome-screen { padding-top: 0; }
+  .welcome-top-scene { padding-top: 40px; margin-bottom: 6px; }
+  .wts-bldg   { font-size: calc(var(--sz, 2.4em) * 0.72); }
+  .wts-tree   { font-size: calc(var(--tsz, 2.8em) * 0.72); }
+  .wts-flower { font-size: 1.1em; }
+  .wts-walk   { font-size: 1.5em; bottom: 22px; }
+  .wts-grass  { height: 24px; }
+  .welcome-card { padding: 24px 18px 28px; }
   .welcome-title { font-size: 1.4em; }
   .day-cell { min-height: 68px; padding: 4px; }
   .chip { font-size: 0.57em; }
