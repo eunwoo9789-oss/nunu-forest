@@ -144,11 +144,10 @@ function bindAll() {
   rnEl.addEventListener('compositionend', syncNickname);
   rnEl.addEventListener('blur', syncNickname);
 
-  // 닉네임이 실명과 다를 때만 수동 수정 플래그 설정
+  // 닉네임 직접 입력 시 플래그 설정 (비어있을 때만 해제 → 자동복사 재개)
   document.getElementById('name-input').addEventListener('input', () => {
     const nInput = document.getElementById('name-input');
-    const rnVal  = document.getElementById('realname-input').value;
-    if (nInput.value && nInput.value !== rnVal) {
+    if (nInput.value) {
       nInput.dataset.manuallyEdited = '1';
     } else {
       delete nInput.dataset.manuallyEdited;
@@ -159,15 +158,17 @@ function bindAll() {
   document.getElementById('prev-month').addEventListener('click', () => shiftMonth(-1));
   document.getElementById('next-month').addEventListener('click', () => shiftMonth(+1));
 
-  // 모바일 좌우 스와이프로 월 이동
-  let swipeStartX = 0;
+  // 모바일 좌우 스와이프로 월 이동 (수직 스크롤과 명확히 구분)
+  let swipeStartX = 0, swipeStartY = 0;
   const calWrap = document.querySelector('.calendar-wrapper');
   calWrap.addEventListener('touchstart', e => {
     swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
   }, { passive: true });
   calWrap.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - swipeStartX;
-    if (Math.abs(dx) > 50) shiftMonth(dx < 0 ? 1 : -1);
+    const dy = e.changedTouches[0].clientY - swipeStartY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shiftMonth(dx < 0 ? 1 : -1);
   }, { passive: true });
 
   document.querySelector('.header-logo').addEventListener('click', goHome);
