@@ -132,16 +132,27 @@ function bindAll() {
   document.getElementById('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
   document.getElementById('realname-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
 
-  // 실명 입력 시 닉네임 자동 복사 (닉네임이 수동 수정되지 않은 경우에만)
-  document.getElementById('realname-input').addEventListener('input', () => {
+  // 실명 → 닉네임 자동 복사 (모바일 한글 compositionend·blur 포함)
+  function syncNickname() {
     const nInput = document.getElementById('name-input');
     if (!nInput.dataset.manuallyEdited) {
       nInput.value = document.getElementById('realname-input').value;
     }
-  });
-  // 닉네임을 직접 수정하면 플래그 설정 + 에러 메시지 초기화
+  }
+  const rnEl = document.getElementById('realname-input');
+  rnEl.addEventListener('input', syncNickname);
+  rnEl.addEventListener('compositionend', syncNickname);
+  rnEl.addEventListener('blur', syncNickname);
+
+  // 닉네임이 실명과 다를 때만 수동 수정 플래그 설정
   document.getElementById('name-input').addEventListener('input', () => {
-    document.getElementById('name-input').dataset.manuallyEdited = '1';
+    const nInput = document.getElementById('name-input');
+    const rnVal  = document.getElementById('realname-input').value;
+    if (nInput.value && nInput.value !== rnVal) {
+      nInput.dataset.manuallyEdited = '1';
+    } else {
+      delete nInput.dataset.manuallyEdited;
+    }
     document.getElementById('name-error').classList.add('hidden');
   });
 
