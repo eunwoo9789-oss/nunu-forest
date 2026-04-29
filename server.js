@@ -80,12 +80,15 @@ function dName(r) {
   return r.realName && r.realName !== r.name ? `${r.realName}(${r.name})` : r.name;
 }
 
-async function notifyAdmin(body) {
+async function notifyAdmin(title, body) {
   if (!NTFY_TOPIC) return;
   try {
     await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      headers: {
+        'Title': title,
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
       body,
     });
   } catch (e) {
@@ -140,7 +143,7 @@ app.post('/api/reservations', async (req, res) => {
   res.json(saved);
   if (!isAdmin) {
     const memoLine = saved.memo ? `\n💬 ${saved.memo}` : '';
-    notifyAdmin(`🌿 새 약속!\n👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
+    notifyAdmin('New Reservation', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
   }
 });
 
@@ -166,7 +169,7 @@ app.put('/api/reservations/:id', async (req, res) => {
   res.json(updated);
   if (token !== ADMIN_TOKEN) {
     const memoLine = updated.memo ? `\n💬 ${updated.memo}` : '';
-    notifyAdmin(`✏️ 약속 변경\n👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
+    notifyAdmin('Updated', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
   }
 });
 
@@ -209,7 +212,7 @@ app.delete('/api/reservations/:id', async (req, res) => {
   await storage.remove(id);
   res.json({ success: true });
   if (token !== ADMIN_TOKEN) {
-    notifyAdmin(`🍂 약속 취소\n👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
+    notifyAdmin('Cancelled', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
   }
 });
 
