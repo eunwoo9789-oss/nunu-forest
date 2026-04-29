@@ -87,7 +87,7 @@ app.post('/api/reservations', async (req, res) => {
 
   if (!isAdmin) {
     if (list.find(r => r.token === token))
-      return res.status(400).json({ error: '이미 약속하셨습니다. 내 약속에서 수정 또는 취소 후 재신청해주세요.' });
+      return res.status(400).json({ error: '이미 약속하셨습니다. 내 약속에서 수정 또는 취소 후 다시 약속해주세요.' });
 
     if (list.find(r =>
       r.name.trim().toLowerCase() === name.trim().toLowerCase() && r.token !== token

@@ -148,6 +148,17 @@ function bindAll() {
   document.getElementById('prev-month').addEventListener('click', () => shiftMonth(-1));
   document.getElementById('next-month').addEventListener('click', () => shiftMonth(+1));
 
+  // 모바일 좌우 스와이프로 월 이동
+  let swipeStartX = 0;
+  const calWrap = document.querySelector('.calendar-wrapper');
+  calWrap.addEventListener('touchstart', e => {
+    swipeStartX = e.touches[0].clientX;
+  }, { passive: true });
+  calWrap.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - swipeStartX;
+    if (Math.abs(dx) > 50) shiftMonth(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
   document.querySelector('.header-logo').addEventListener('click', goHome);
   document.getElementById('music-toggle').addEventListener('click', toggleMusic);
   document.getElementById('my-reservation-btn').addEventListener('click', openMyModal);
@@ -506,7 +517,7 @@ function openDateDetail(dateStr) {
   } else if (myAny) {
     const msg = document.createElement('div');
     msg.style.cssText = 'font-size:0.82em;color:#a1887f;text-align:center;width:100%;padding:4px 0';
-    msg.innerHTML = `⚠️ 이미 <b>${fmtKo(myAny.date)}</b>에 약속하셨어요.<br>내 약속에서 수정 또는 취소 후 재신청해주세요.`;
+    msg.innerHTML = `⚠️ 이미 <b>${fmtKo(myAny.date)}</b>에 약속하셨어요.<br>내 약속에서 수정 또는 취소 후 다시 약속해주세요.`;
     actions.appendChild(msg);
     const closeBtn = document.createElement('button');
     closeBtn.className = 'btn btn-ghost';
