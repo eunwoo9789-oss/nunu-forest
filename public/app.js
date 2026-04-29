@@ -959,6 +959,7 @@ async function doNickEdit() {
 }
 
 async function doAdminBulkDelete() {
+  if (!S.isAdmin) return;
   if (!confirm('모든 약속을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
   try {
     const res = await fetch('/api/reservations', {
