@@ -507,7 +507,16 @@ function openDateDetail(dateStr) {
           wrap.appendChild(chip);
           wrap.appendChild(editBtn);
           wrap.appendChild(delBtn);
-          container.appendChild(wrap);
+          const outerWrap = document.createElement('div');
+          outerWrap.className = 'admin-attendee-wrap';
+          outerWrap.appendChild(wrap);
+          if (r.memo) {
+            const memoEl = document.createElement('div');
+            memoEl.className = 'admin-attendee-memo';
+            memoEl.textContent = `💬 ${r.memo}`;
+            outerWrap.appendChild(memoEl);
+          }
+          container.appendChild(outerWrap);
         } else {
           const chip = document.createElement('span');
           chip.className = `dchip ${opt}`;
@@ -787,6 +796,7 @@ function openMyModal() {
           <div class="res-card-name">👤 ${adminLabel}</div>
           <div class="res-card-date">📅 ${fmtKo(r.date)}</div>
           <div class="res-card-opt">${OPT[r.option].emoji} ${OPT[r.option].label}</div>
+          ${r.memo ? `<div class="res-card-memo">💬 ${r.memo}</div>` : ''}
           <div class="res-card-btns">
             <button class="btn-edit-sm" onclick="closeModal('my-modal');adminStartEdit('${r.id}')">✏️ 수정</button>
             <button class="btn-cancel-sm" onclick="adminDeleteFromPanel('${r.id}')">🗑️ 삭제</button>

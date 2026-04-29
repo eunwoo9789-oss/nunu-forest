@@ -980,6 +980,8 @@ input[type="text"].error {
   border: 1px solid #ef9a9a;
 }
 .admin-micro-btn.del:hover { background: #ffcdd2; }
+.admin-attendee-wrap { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+.admin-attendee-memo { font-size: 0.75em; color: #8d6e63; font-style: italic; padding-left: 2px; }
 
 /* 옵션 리스트 */
 .option-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
