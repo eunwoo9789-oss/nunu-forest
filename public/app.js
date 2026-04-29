@@ -772,7 +772,8 @@ async function doEditConfirm() {
 /* ═══════════════════════════════════
    MY 약속
 ═══════════════════════════════════ */
-function openMyModal() {
+async function openMyModal() {
+  await fetchAll();
   const listEl = document.getElementById('my-list');
   const titleEl = document.getElementById('my-modal-title');
 
