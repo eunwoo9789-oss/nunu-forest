@@ -87,16 +87,13 @@ function notifyAdmin(tag, body) {
     return;
   }
   console.log(`[ntfy] 전송 시작 → topic=${NTFY_TOPIC}, tag=${tag}`);
-  const text = Buffer.from(`${tag}\n${body}`, 'utf8');
+  const payload = `${tag}\n${body}`;
   const req = https.request(
     {
       hostname: 'ntfy.sh',
       path: `/${NTFY_TOPIC}`,
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Content-Length': text.length,
-      },
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     },
     res => {
       console.log(`[ntfy] 응답 상태: ${res.statusCode}`);
@@ -104,7 +101,7 @@ function notifyAdmin(tag, body) {
     }
   );
   req.on('error', e => console.error('[ntfy] 오류:', e.message));
-  req.end(text);
+  req.end(payload, 'utf8');
 }
 
 /* ══════════════════════════════════════
