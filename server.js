@@ -80,15 +80,12 @@ function dName(r) {
   return r.realName && r.realName !== r.name ? `${r.realName}(${r.name})` : r.name;
 }
 
-async function notifyAdmin(title, body) {
+async function notifyAdmin(body) {
   if (!NTFY_TOPIC) return;
   try {
     await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
       method: 'POST',
-      headers: {
-        'Title': encodeURIComponent(title),
-        'Content-Type': 'text/plain; charset=utf-8',
-      },
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       body,
     });
   } catch (e) {
@@ -143,13 +140,13 @@ app.post('/api/reservations', async (req, res) => {
   res.json(saved);
   if (!isAdmin) {
     const memoLine = saved.memo ? `\n💬 ${saved.memo}` : '';
-    notifyAdmin('🌿 새 약속!', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
+    notifyAdmin(`🌿 새 약속!\n👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
   }
 });
 
 app.put('/api/reservations/:id', async (req, res) => {
   const { id } = req.params;
-  const { date, option, token } = req.body;
+  const { date, option, token, memo } = req.body;
 
   const existing = await storage.findOne({ id });
   if (!existing) return res.status(404).json({ error: '약속을 찾을 수 없습니다.' });
@@ -163,10 +160,13 @@ app.put('/api/reservations/:id', async (req, res) => {
       return res.status(400).json({ error: '해당 세션은 이미 5명이 꽉 찼어요! 다른 날짜나 옵션을 선택해주세요. 😢' });
   }
 
-  const updated = await storage.update(id, { date, option });
+  const fields = { date, option };
+  if (memo !== undefined) fields.memo = memo;
+  const updated = await storage.update(id, fields);
   res.json(updated);
   if (token !== ADMIN_TOKEN) {
-    notifyAdmin('✏️ 약속 변경', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}`);
+    const memoLine = updated.memo ? `\n💬 ${updated.memo}` : '';
+    notifyAdmin(`✏️ 약속 변경\n👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
   }
 });
 
@@ -209,7 +209,7 @@ app.delete('/api/reservations/:id', async (req, res) => {
   await storage.remove(id);
   res.json({ success: true });
   if (token !== ADMIN_TOKEN) {
-    notifyAdmin('🍂 약속 취소', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
+    notifyAdmin(`🍂 약속 취소\n👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
   }
 });
 

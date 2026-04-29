@@ -656,6 +656,8 @@ function advanceFromOption() {
   if (S.editId) {
     document.getElementById('edit-confirm-title').textContent =
       `${dateKo}\n${info.emoji} ${info.label}`;
+    const existingRes = S.reservations.find(r => r.id === S.editId);
+    document.getElementById('edit-confirm-memo').value = existingRes ? (existingRes.memo || '') : '';
     openModal('edit-confirm-modal');
   } else {
     if (S.pendingOption === 'bread') {
@@ -750,10 +752,12 @@ async function doConfirm() {
 
 async function doEditConfirm() {
   try {
+    const memoEl = document.getElementById('edit-confirm-memo');
+    const memo   = memoEl ? memoEl.value.trim() : undefined;
     const res = await fetch(`/api/reservations/${S.editId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: S.pendingDate, option: S.pendingOption, token: S.token }),
+      body: JSON.stringify({ date: S.pendingDate, option: S.pendingOption, token: S.token, memo }),
     });
     if (!res.ok) throw new Error();
     const updated = await res.json();
