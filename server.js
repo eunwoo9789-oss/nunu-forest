@@ -154,7 +154,7 @@ app.post('/api/reservations', async (req, res) => {
   res.json(saved);
   if (!isAdmin) {
     const memoLine = saved.memo ? `\n💬 ${saved.memo}` : '';
-    notifyAdmin('1', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
+    notifyAdmin('새 약속', `👤 ${dName(saved)}\n📅 ${saved.date}  ${OPT_KO[saved.option] || saved.option}${memoLine}`);
   }
 });
 
@@ -180,7 +180,7 @@ app.put('/api/reservations/:id', async (req, res) => {
   res.json(updated);
   if (token !== ADMIN_TOKEN) {
     const memoLine = updated.memo ? `\n💬 ${updated.memo}` : '';
-    notifyAdmin('2', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
+    notifyAdmin('수정', `👤 ${dName(existing)}\n📅 ${date}  ${OPT_KO[option] || option}${memoLine}`);
   }
 });
 
@@ -223,7 +223,7 @@ app.delete('/api/reservations/:id', async (req, res) => {
   await storage.remove(id);
   res.json({ success: true });
   if (token !== ADMIN_TOKEN) {
-    notifyAdmin('0', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
+    notifyAdmin('취소', `👤 ${dName(existing)}\n📅 ${existing.date}  ${OPT_KO[existing.option] || existing.option}`);
   }
 });
 
