@@ -317,6 +317,9 @@
       <div class="confirm-emoji" id="confirm-emoji">🌿</div>
       <h3 class="confirm-title" id="confirm-title"></h3>
       <p class="confirm-question" id="confirm-question">에 해쳐모이시겠습니까?</p>
+      <div class="memo-input-wrap">
+        <input type="text" id="confirm-memo" placeholder="💬 한 줄 메모 (선택, 최대 50자)" maxlength="50" autocomplete="off">
+      </div>
       <div class="modal-actions">
         <button id="confirm-ok-btn" class="btn btn-primary">네, 그날봐요! 🎉</button>
         <button id="confirm-back-btn" class="btn btn-ghost">잠시만, 다시볼래요</button>
@@ -344,7 +347,8 @@
     <div class="modal-card">
       <h3 class="modal-section-title" id="my-modal-title">📋 내 약속 현황</h3>
       <div id="my-list" class="my-list"></div>
-      <div class="modal-actions" style="margin-top:16px">
+      <div class="modal-actions" style="margin-top:16px;flex-direction:column;gap:8px">
+        <button id="admin-bulk-delete-btn" class="btn btn-danger hidden" style="width:100%">🗑️ 전체 약속 삭제</button>
         <button id="close-my-modal" class="btn btn-ghost" style="width:100%">닫기</button>
       </div>
     </div>
@@ -382,6 +386,24 @@
       <div class="modal-actions" style="margin-top:16px">
         <button id="admin-add-ok-btn" class="btn btn-primary">추가하기 ✨</button>
         <button id="admin-add-cancel-btn" class="btn btn-ghost">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NICK EDIT MODAL ===== -->
+  <div id="nick-edit-modal" class="modal hidden">
+    <div class="modal-bg"></div>
+    <div class="modal-card text-center">
+      <div class="confirm-emoji">🏷️</div>
+      <h3 class="confirm-title">닉네임 변경</h3>
+      <p class="modal-sub">새 닉네임을 입력해주세요</p>
+      <div style="margin-bottom:10px">
+        <input type="text" id="nick-edit-input" placeholder="새 닉네임 (최대 12자)" maxlength="12" autocomplete="off">
+      </div>
+      <div id="nick-edit-error" class="input-error hidden" style="margin-bottom:10px;text-align:left"></div>
+      <div class="modal-actions">
+        <button id="nick-edit-ok-btn" class="btn btn-primary">변경하기 ✨</button>
+        <button id="nick-edit-cancel-btn" class="btn btn-ghost">취소</button>
       </div>
     </div>
   </div>

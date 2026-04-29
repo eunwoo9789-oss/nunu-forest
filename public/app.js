@@ -59,6 +59,7 @@ const S = {
   audioCtx: null,
   musicOn: false,
   musicTimer: null,
+  nickEditId: null,
 };
 
 /* ═══════════════════════════════════
@@ -210,6 +211,15 @@ function bindAll() {
   document.querySelectorAll('.admin-opt-btn').forEach(btn => {
     btn.addEventListener('click', () => selectAdminOpt(btn.dataset.opt));
   });
+
+  document.getElementById('nick-edit-ok-btn').addEventListener('click', doNickEdit);
+  document.getElementById('nick-edit-cancel-btn').addEventListener('click', () => {
+    closeModal('nick-edit-modal');
+    openMyModal();
+  });
+  document.getElementById('nick-edit-input').addEventListener('keydown', e => { if (e.key === 'Enter') doNickEdit(); });
+
+  document.getElementById('admin-bulk-delete-btn').addEventListener('click', doAdminBulkDelete);
 
   document.getElementById('welcome-info-ok-btn').addEventListener('click', () => {
     closeModal('welcome-info-modal');
@@ -440,6 +450,18 @@ function fmtKo(dateStr) {
   const [y, m, n] = dateStr.split('-');
   const dow = new Date(dateStr).getDay();
   return `${y}년 ${parseInt(m)}월 ${parseInt(n)}일 (${KO_DAYS[dow]})`;
+}
+
+/* ═══════════════════════════════════
+   D-DAY HELPER
+═══════════════════════════════════ */
+function getDday(dateStr) {
+  const today  = new Date(); today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr); target.setHours(0, 0, 0, 0);
+  const diff   = Math.round((target - today) / 86400000);
+  if (diff === 0) return { label: 'D-Day', cls: 'dday-today' };
+  if (diff  >  0) return { label: `D-${diff}`, cls: 'dday-future' };
+  return { label: `D+${Math.abs(diff)}`, cls: 'dday-past' };
 }
 
 /* ═══════════════════════════════════
@@ -686,12 +708,14 @@ function renderNickCloud() {
 
 async function doConfirm() {
   try {
+    const memoEl = document.getElementById('confirm-memo');
+    const memo   = memoEl ? memoEl.value.trim() : '';
     const res = await fetch('/api/reservations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: S.userName, realName: S.realName || S.userName,
-        date: S.pendingDate, option: S.pendingOption, token: S.token
+        date: S.pendingDate, option: S.pendingOption, token: S.token, memo,
       }),
     });
     const data = await res.json();
@@ -703,6 +727,7 @@ async function doConfirm() {
     }
 
     S.reservations.push(data);
+    if (memoEl) memoEl.value = '';
     closeModal('confirm-modal');
     renderCal();
     const msg = S.pendingOption === 'bread'
@@ -742,7 +767,9 @@ function openMyModal() {
   const listEl = document.getElementById('my-list');
   const titleEl = document.getElementById('my-modal-title');
 
+  const bulkBtn = document.getElementById('admin-bulk-delete-btn');
   if (S.isAdmin) {
+    bulkBtn.classList.remove('hidden');
     titleEl.textContent = '👑 전체 약속 현황';
     const all = [...S.reservations].sort((a, b) => a.date.localeCompare(b.date));
     if (all.length === 0) {
@@ -768,6 +795,7 @@ function openMyModal() {
       }).join('');
     }
   } else {
+    bulkBtn.classList.add('hidden');
     titleEl.textContent = '📋 내 약속 현황';
     const mine = S.reservations.filter(r => r.token === S.token)
       .sort((a, b) => a.date.localeCompare(b.date));
@@ -778,16 +806,24 @@ function openMyModal() {
           <p>아직 약속한 일정이 없어요.<br>달력에서 날짜를 눌러보세요!</p>
         </div>`;
     } else {
-      listEl.innerHTML = mine.map(r => `
+      listEl.innerHTML = mine.map(r => {
+        const dd = getDday(r.date);
+        const memoHtml = r.memo ? `<div class="res-card-memo">💬 ${r.memo}</div>` : '';
+        return `
         <div class="res-card">
-          <div class="res-card-date">📅 ${fmtKo(r.date)}</div>
-          <div class="res-card-opt">${OPT[r.option].emoji} ${OPT[r.option].label}</div>
-          <div class="res-card-btns">
-            <button class="btn-edit-sm" onclick="closeModal('my-modal');startEditMode('${r.id}')">✏️ 수정하기</button>
-            <button class="btn-cancel-sm" onclick="startCancel('${r.id}')">🗑️ 취소하기</button>
+          <div class="res-card-top">
+            <div class="res-card-date">📅 ${fmtKo(r.date)}</div>
+            <span class="dday-badge ${dd.cls}">${dd.label}</span>
           </div>
-        </div>
-      `).join('');
+          <div class="res-card-opt">${OPT[r.option].emoji} ${OPT[r.option].label}</div>
+          ${memoHtml}
+          <div class="res-card-btns">
+            <button class="btn-edit-sm" onclick="closeModal('my-modal');startEditMode('${r.id}')">✏️ 수정</button>
+            <button class="btn-nick-sm" onclick="startNickEdit('${r.id}')">🏷️ 닉네임</button>
+            <button class="btn-cancel-sm" onclick="startCancel('${r.id}')">🗑️ 취소</button>
+          </div>
+        </div>`;
+      }).join('');
     }
   }
   openModal('my-modal');
@@ -866,6 +902,77 @@ async function adminDeleteFromPanel(reservationId) {
     openMyModal();
   } catch {
     toast('⚠️ 삭제에 실패했습니다.');
+  }
+}
+
+function startNickEdit(reservationId) {
+  S.nickEditId = reservationId;
+  const r = S.reservations.find(x => x.id === reservationId);
+  if (!r) return;
+  const input = document.getElementById('nick-edit-input');
+  const errEl = document.getElementById('nick-edit-error');
+  input.value = r.name;
+  errEl.classList.add('hidden');
+  closeModal('my-modal');
+  openModal('nick-edit-modal');
+}
+
+async function doNickEdit() {
+  const newNick = document.getElementById('nick-edit-input').value.trim();
+  const errEl   = document.getElementById('nick-edit-error');
+  if (!newNick) { errEl.textContent = '닉네임을 입력해주세요.'; errEl.classList.remove('hidden'); return; }
+
+  const lowerNew = newNick.toLowerCase();
+  const dup = S.reservations.find(r =>
+    r.id !== S.nickEditId && r.name.trim().toLowerCase() === lowerNew
+  );
+  if (dup) {
+    errEl.textContent = '이미 숲에 살고 있는 닉네임이에요! 다른 닉네임을 골라주세요 🐿️';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/reservations/${S.nickEditId}/nickname`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newNick, token: S.token }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.error || '변경에 실패했습니다.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    const idx = S.reservations.findIndex(r => r.id === S.nickEditId);
+    if (idx !== -1) S.reservations[idx] = data;
+    S.userName = newNick;
+    localStorage.setItem('ac_name', newNick);
+    S.nickEditId = null;
+    closeModal('nick-edit-modal');
+    renderCal();
+    toast(`🏷️ 닉네임이 "${newNick}"으로 변경되었어요!`);
+    openMyModal();
+  } catch {
+    toast('⚠️ 서버 오류입니다.');
+  }
+}
+
+async function doAdminBulkDelete() {
+  if (!confirm('모든 약속을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
+  try {
+    const res = await fetch('/api/reservations', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: ADMIN_TOKEN }),
+    });
+    if (!res.ok) throw new Error();
+    S.reservations = [];
+    closeModal('my-modal');
+    renderCal();
+    toast('🗑️ 모든 약속이 삭제되었어요.');
+  } catch {
+    toast('⚠️ 전체 삭제에 실패했습니다.');
   }
 }
 

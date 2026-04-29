@@ -32,6 +32,7 @@ if (process.env.MONGO_URI) {
         { returnDocument: 'after', projection: { _id: 0 } })
       .then(res => res.value ?? res),
     remove:    (id)         => col.deleteOne({ id }),
+    removeAll: ()           => col.deleteMany({}),
     findOne:   (query)      => col.findOne(query, { projection: { _id: 0 } }),
   };
 
@@ -58,7 +59,8 @@ if (process.env.MONGO_URI) {
       l[i] = { ...l[i], ...fields, updatedAt: new Date().toISOString() };
       write(l); return l[i];
     },
-    remove:  async (id)         => { write(read().filter(r => r.id !== id)); },
+    remove:    async (id)         => { write(read().filter(r => r.id !== id)); },
+    removeAll: async ()           => { write([]); },
     findOne: async (query)      => {
       const list = read();
       return list.find(r => Object.entries(query).every(([k, v]) => r[k] === v)) ?? null;
@@ -76,7 +78,7 @@ app.get('/api/reservations', async (req, res) => {
 });
 
 app.post('/api/reservations', async (req, res) => {
-  const { name, realName, date, option, token } = req.body;
+  const { name, realName, date, option, token, memo } = req.body;
   if (!name || !date || !option || !token)
     return res.status(400).json({ error: '필수 정보가 없습니다.' });
 
@@ -107,6 +109,7 @@ app.post('/api/reservations', async (req, res) => {
     name,
     realName: realName || name,
     date, option,
+    memo: memo || '',
     token: entryToken,
     createdAt: new Date().toISOString()
   };
@@ -130,6 +133,33 @@ app.put('/api/reservations/:id', async (req, res) => {
   }
 
   res.json(await storage.update(id, { date, option }));
+});
+
+app.patch('/api/reservations/:id/nickname', async (req, res) => {
+  const { id } = req.params;
+  const { name, token } = req.body;
+  if (!name) return res.status(400).json({ error: '닉네임을 입력해주세요.' });
+
+  const existing = await storage.findOne({ id });
+  if (!existing) return res.status(404).json({ error: '약속을 찾을 수 없습니다.' });
+  if (existing.token !== token && token !== ADMIN_TOKEN)
+    return res.status(403).json({ error: '권한이 없습니다.' });
+
+  const lowerName = name.trim().toLowerCase();
+  const list = await storage.getAll();
+  const dup = list.find(r =>
+    r.id !== id && r.name.trim().toLowerCase() === lowerName
+  );
+  if (dup) return res.status(400).json({ error: '이미 숲에 살고 있는 닉네임이에요! 다른 닉네임을 골라주세요 🐿️' });
+
+  res.json(await storage.update(id, { name }));
+});
+
+app.delete('/api/reservations', async (req, res) => {
+  const { token } = req.body;
+  if (token !== ADMIN_TOKEN) return res.status(403).json({ error: '권한이 없습니다.' });
+  await storage.removeAll();
+  res.json({ success: true });
 });
 
 app.delete('/api/reservations/:id', async (req, res) => {

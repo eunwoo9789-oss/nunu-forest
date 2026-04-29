@@ -1223,6 +1223,56 @@ input[type="text"].error {
   transition: all .15s;
 }
 .btn-cancel-sm:hover { background: #ffcdd2; }
+.btn-nick-sm {
+  padding: 6px 12px;
+  font-size: 0.83em;
+  font-weight: 600;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1.5px solid #a5d6a7;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-nick-sm:hover { background: #c8e6c9; }
+
+/* D-day 배지 */
+.res-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.dday-badge {
+  font-size: 0.72em;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.dday-today  { background: #ff7043; color: #fff; }
+.dday-future { background: #43a047; color: #fff; }
+.dday-past   { background: #9e9e9e; color: #fff; }
+
+/* 메모 */
+.res-card-memo {
+  font-size: 0.8em;
+  color: #8d6e63;
+  font-style: italic;
+  margin: 0 0 8px;
+}
+.memo-input-wrap {
+  margin: 8px 0 16px;
+}
+.memo-input-wrap input[type="text"] {
+  font-size: 0.88em;
+  padding: 10px 14px;
+  border-width: 1.5px;
+  text-align: left;
+}
 
 .empty-state { text-align: center; padding: 28px 0; color: var(--light-brown); }
 .empty-state .empty-icon { font-size: 2.8em; margin-bottom: 10px; }
