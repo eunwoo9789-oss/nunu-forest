@@ -491,6 +491,12 @@ function openDateDetail(dateStr) {
 
   document.getElementById('detail-date-title').textContent = dateKo;
 
+  const available = getAvailableOptions(dateStr);
+  ['lunch', 'dinner', 'bread'].forEach(opt => {
+    const sec = document.getElementById(`detail-${opt}`).parentElement;
+    sec.classList.toggle('hidden', !available.includes(opt));
+  });
+
   ['lunch', 'dinner', 'bread'].forEach(opt => {
     const container = document.getElementById(`detail-${opt}`);
     container.innerHTML = '';
