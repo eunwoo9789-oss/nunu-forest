@@ -13,6 +13,14 @@ const OPT = {
 const KO_MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const KO_DAYS   = ['일','월','화','수','목','금','토'];
 
+const FIRST_WORKDAY = '2026-05-18';
+
+function getAvailableOptions(dateStr) {
+  if (dateStr < FIRST_WORKDAY) return ['lunch', 'dinner', 'bread'];
+  const dow = new Date(dateStr).getDay();
+  return (dow === 0 || dow === 6) ? ['lunch', 'dinner'] : ['dinner'];
+}
+
 const HOLIDAYS = {
   '2025-01-01': '신정',
   '2025-01-27': '설날 연휴', '2025-01-28': '설날', '2025-01-29': '설날 연휴',
@@ -396,6 +404,14 @@ function renderCal() {
       cell.appendChild(hl);
     }
 
+    if (dateStr === FIRST_WORKDAY) {
+      cell.classList.add('first-workday');
+      const wl = document.createElement('div');
+      wl.className = 'first-workday-label';
+      wl.textContent = '💪 새회사 출근하는 날';
+      cell.appendChild(wl);
+    }
+
     const chipsEl = document.createElement('div');
     chipsEl.className = 'chips';
     const dayRes = S.reservations.filter(r => r.date === dateStr);
@@ -620,10 +636,17 @@ function cancelEditMode() {
    OPTION MODAL
 ═══════════════════════════════════ */
 function updateOptionCapacity(dateStr) {
+  const available = getAvailableOptions(dateStr);
   const MAX = 5;
-  ['lunch', 'dinner'].forEach(opt => {
+
+  ['lunch', 'dinner', 'bread'].forEach(opt => {
+    const item = document.querySelector(`.option-item[data-option="${opt}"]`);
+    if (!item) return;
+    const show = available.includes(opt);
+    item.classList.toggle('hidden', !show);
+    if (!show) return;
+    if (opt === 'bread') { item.classList.remove('disabled'); return; }
     const count = S.reservations.filter(r => r.date === dateStr && r.option === opt).length;
-    const item  = document.querySelector(`.option-item[data-option="${opt}"]`);
     const badge = item.querySelector('.opt-capacity');
     if (!badge) return;
     const full = count >= MAX;
@@ -632,13 +655,17 @@ function updateOptionCapacity(dateStr) {
     badge.className   = 'opt-capacity' + (full ? ' full' : warn ? ' warn' : '');
     item.classList.toggle('disabled', full);
   });
-  // 성심당 인원 제한 없음
-  document.querySelector('.option-item[data-option="bread"]').classList.remove('disabled');
+
+  const notice = document.getElementById('option-workday-notice');
+  if (notice) {
+    const dow = new Date(dateStr).getDay();
+    notice.classList.toggle('hidden', !(dateStr >= FIRST_WORKDAY && dow !== 0 && dow !== 6));
+  }
 }
 
 function selectOption(opt) {
   const item = document.querySelector(`.option-item[data-option="${opt}"]`);
-  if (item && item.classList.contains('disabled')) return;
+  if (item && (item.classList.contains('disabled') || item.classList.contains('hidden'))) return;
   document.querySelectorAll('.option-item').forEach(el => {
     el.classList.toggle('selected', el.dataset.option === opt);
   });
